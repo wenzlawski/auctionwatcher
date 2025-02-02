@@ -21,6 +21,10 @@ def execute():
 
     settings = get_project_settings()
     settings.set("MAIL_PASS", args.mail_pass)
+    print(f"{settings.get("MAIL_PASS") = }")
+    print(f"{settings.get("MAIL_HOST") = }")
+    print(f"{settings.get("MAIL_USER") = }")
+    print(f"{settings.get("MAIL_PASS") = }")
     process = CrawlerProcess(settings)
     process.crawl(AuctionSpider)
     process.start()
