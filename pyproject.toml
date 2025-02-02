@@ -17,3 +17,6 @@ requires-python = ">=3.9"
 
 [project.scripts]
 auctionwatcher = "auctionwatcher.main:execute"
+
+[tool.setuptools.package-data]
+"auctionwatcher" = ["templates/*.html"]

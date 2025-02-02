@@ -40,8 +40,9 @@ class AuctionwatcherPipeline:
             spider.logger.info(f"No new auctions.")
 
     def new_auctions_mail(self):
-        template_loader = jinja2.FileSystemLoader(searchpath="./")
-        template_env = jinja2.Environment(loader=template_loader)
+        template_loader = jinja2.PackageLoader("auctionwatcher", "templates")
+        template_env = jinja2.Environment(loader=template_loader,
+                                          autoescape=jinja2.select_autoescape(['html']))
         template = template_env.get_template("mail.html")
 
         end_dates = [dateparser.parse(a.end_datetime,

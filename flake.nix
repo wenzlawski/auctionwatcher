@@ -30,14 +30,13 @@
 
         propagatedBuildInputs = pyPkgs;
 
-        nativeBuildInputs =
-          nativeBuildInputs
-          ++ [
-          ];
-
         pythonImportsCheck = [
           "auctionwatcher"
         ];
+
+        postFixup = ''
+          wrapProgram $out/bin/auctionwatcher --set SCRAPY_SETTINGS_MODULE auctionwatcher.settings
+        '';
       };
     });
 }
