@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+  </head>
+  <body>
+    <h3>There are new auctions:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>End Date</th>
+          <th>Human-Readable Date</th>
+          <th>Location name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a, human_date in auction_pairs %}
+        <tr>
+          <td>
+            <a href="https://luedtke-auktion-online.de/auktion/{{ a.no }}"
+              >{{ a.title }}</a
+            >
+          </td>
+          <td>{{ a.end_datetime }}</td>
+          <td>in {{ human_date }}</td>
+          <td>{{ a.location_name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
