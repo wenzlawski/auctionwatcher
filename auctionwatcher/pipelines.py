@@ -20,7 +20,6 @@ import platformdirs
 
 class AuctionwatcherPipeline:
     def init_db(self):
-        print(self.get_db_home())
         self.con = sqlite3.connect(self.get_db_home())
         self.cur = self.con.cursor()
         self.new_auctions = []
@@ -77,8 +76,6 @@ class AuctionwatcherPipeline:
         field_names = [field.name for field in fields(item)]
         placeholders = ", ".join(["?"] * len(field_names))
         columns = ", ".join(field_names)
-
-        print(item)
 
         self.cur.execute("SELECT COUNT(*) FROM auction WHERE no = ?", (item.no, ))
         exists = self.cur.fetchone()[0]

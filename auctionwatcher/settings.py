@@ -98,3 +98,4 @@ MAIL_USER = "marcwenzlawski@posteo.com"
 MAIL_PORT = 587
 MAIL_TLS = False
 MAIL_SSL = False
+LOG_LEVEL = "WARNING"
