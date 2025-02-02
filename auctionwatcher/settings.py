@@ -96,6 +96,5 @@ MAIL_HOST = "posteo.de"
 MAIL_FROM = "marcwenzlawski@posteo.com"
 MAIL_USER = "marcwenzlawski@posteo.com"
 MAIL_PORT = 587
-MAIL_PASS = ""
 MAIL_TLS = False
 MAIL_SSL = False
