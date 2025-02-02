@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AuctionWatcher"
+dynamic = ["version"]
+description = "A auction watcher"
+dependencies = [
+  "scrapy>=2.11",
+  "humanize",
+  "jinja2",
+  "dateparser",
+  "platformdirs"
+]
+requires-python = ">=3.9"
+
+[project.scripts]
+auctionwatcher = "auctionwatcher.main:execute"

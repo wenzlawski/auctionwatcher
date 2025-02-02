@@ -14,10 +14,14 @@ import jinja2
 import humanize
 import dateparser
 import datetime as dt
+import importlib.metadata
+import os
+import platformdirs
 
 class AuctionwatcherPipeline:
     def init_db(self):
-        self.con = sqlite3.connect("auctions.db")
+        print(self.get_db_home())
+        self.con = sqlite3.connect(self.get_db_home())
         self.cur = self.con.cursor()
         self.new_auctions = []
         field_str = ", ".join([field.name for field in fields(Auction)])
@@ -64,6 +68,11 @@ class AuctionwatcherPipeline:
                     mimetype="text/html",
                     charset="utf-8")
 
+    def get_db_home(self):
+        datadir = platformdirs.user_data_dir("auctionwatcher", "mw")
+        os.makedirs(datadir, exist_ok=True)
+        return os.path.join(datadir, "database.sqlite")
+
     def process_item(self, item: Auction, spider):
         field_names = [field.name for field in fields(item)]
         placeholders = ", ".join(["?"] * len(field_names))
@@ -76,7 +85,7 @@ class AuctionwatcherPipeline:
 
         if not exists:
             self.cur.execute(f"INSERT INTO auction ({columns}) VALUES ({placeholders})",
-                         astuple(item))
+                             astuple(item))
             self.new_auctions.append(item)
 
         return item

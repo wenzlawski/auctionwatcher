@@ -6,32 +6,38 @@
     inputs.flake-utils.lib.eachDefaultSystem (system: let
       pkgs = inputs.nixpkgs.legacyPackages.${system};
 
-      python' = pkgs.python3.withPackages (ps:
-        with ps; [
-          scrapy
-          jinja2
-          humanize
-          dateparser
-        ]);
+      pyPkgs = with pkgs.python3Packages; [
+        scrapy
+        jinja2
+        humanize
+        dateparser
+        platformdirs
+      ];
+
+      python' = pkgs.python3.withPackages (ps: pyPkgs);
 
       nativeBuildInputs = with pkgs; [
         python'
       ];
-
-      buildInputs = with pkgs; [];
     in {
-      devShells.default = pkgs.mkShell {inherit nativeBuildInputs buildInputs;};
+      devShells.default = pkgs.mkShell {inherit nativeBuildInputs;};
 
-      packages.default = pkgs.stdenv.mkDerivation {
-        pname = "template";
-        version = "0.0.0";
+      packages.default = pkgs.python3.pkgs.buildPythonApplication {
+        name = "auctionwatcher";
+        version = "0.0.1";
         src = ./.;
+        format = "pyproject";
+
+        propagatedBuildInputs = pyPkgs;
 
         nativeBuildInputs =
           nativeBuildInputs
           ++ [
           ];
-        inherit buildInputs;
+
+        pythonImportsCheck = [
+          "auctionwatcher"
+        ];
       };
     });
 }
