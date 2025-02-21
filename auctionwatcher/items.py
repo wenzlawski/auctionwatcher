@@ -15,9 +15,9 @@ class Auction:
     street: str 
     city: str
     end_datetime: str
-    collection_time: str
-    payment: str
-    contact: str
+    collection_time: str = ''
+    payment: str = ''
+    contact: str = ''
     viewing_time: str = ''
     shipping: str = ''
 
