@@ -27,15 +27,21 @@ class AuctionwatcherPipeline:
         self.cur.execute(f"CREATE TABLE IF NOT EXISTS auction({field_str})")
         self.con.commit()
 
+        # reset the activity counter in auctions
+        self.cur.execute("UPDATE auction SET current = False")
+
     def open_spider(self, spider):
         self.init_db()
 
     def close_spider(self, spider):
+        # Delete inactive auctions
+        self.cur.execute("DELETE FROM auction WHERE current = False")
+
         self.con.commit()
         self.con.close()
         if self.new_auctions:
             spider.logger.info(f"{len(self.new_auctions)} new auctions.")
-            self.send_mail(spider.settings)
+            return self.send_mail(spider.settings)
         else:
             spider.logger.info(f"No new auctions.")
 
@@ -62,7 +68,7 @@ class AuctionwatcherPipeline:
     def send_mail(self, settings):
         mailer = MailSender.from_settings(settings)
 
-        mailer.send("marcwenzlawski@posteo.com",
+        return mailer.send("marcwenzlawski@posteo.com",
                     "New Auctions Registered",
                     body=self.new_auctions_mail(),
                     mimetype="text/html",
@@ -85,5 +91,7 @@ class AuctionwatcherPipeline:
             self.cur.execute(f"INSERT INTO auction ({columns}) VALUES ({placeholders})",
                              astuple(item))
             self.new_auctions.append(item)
+        else:
+            self.cur.execute(f"UPDATE auction SET current = True")
 
         return item

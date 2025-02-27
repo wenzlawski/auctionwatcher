@@ -20,6 +20,7 @@ class Auction:
     contact: str = ''
     viewing_time: str = ''
     shipping: str = ''
+    current: bool = True
 
 
 # class AuctionwatcherItem(scrapy.Item):
