@@ -5,6 +5,7 @@
 
 
 # useful for handling different item types with a single interface
+import logging
 from itemadapter import ItemAdapter
 from auctionwatcher.items import Auction
 from dataclasses import fields, astuple
@@ -20,6 +21,7 @@ import platformdirs
 
 class AuctionwatcherPipeline:
     def init_db(self):
+        self.logger.info(f"Opening database {self.get_db_home()}")
         self.con = sqlite3.connect(self.get_db_home())
         self.cur = self.con.cursor()
         self.new_auctions = []
@@ -30,7 +32,16 @@ class AuctionwatcherPipeline:
         # reset the activity counter in auctions
         self.cur.execute("UPDATE auction SET current = False")
 
+    @classmethod
+    def from_crawler(cls, crawler):
+        # create instance and attach crawler if you need it elsewhere
+        pipeline = cls()
+        pipeline.crawler = crawler
+        return pipeline
+
+
     def open_spider(self, spider):
+        self.logger = logging.getLogger(__name__)
         self.init_db()
 
     def close_spider(self, spider):
@@ -66,7 +77,8 @@ class AuctionwatcherPipeline:
         return html_output
 
     def send_mail(self, settings):
-        mailer = MailSender.from_settings(settings)
+        # mailer = MailSender.from_settings(settings)
+        mailer = MailSender.from_crawler(self.crawler)
 
         return mailer.send("marcwenzlawski@posteo.com",
                     "New Auctions Registered",
@@ -80,6 +92,7 @@ class AuctionwatcherPipeline:
         return os.path.join(datadir, "database.sqlite")
 
     def process_item(self, item: Auction, spider):
+        self.logger.info(f"Saving {item} to db.")
         field_names = [field.name for field in fields(item)]
         placeholders = ", ".join(["?"] * len(field_names))
         columns = ", ".join(field_names)

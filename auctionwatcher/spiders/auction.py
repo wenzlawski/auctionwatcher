@@ -15,24 +15,17 @@ auction_translator = {
 class AuctionSpider(scrapy.Spider):
     name = "auction"
     allowed_domains = ["luedtke-auktion-online.de"]
-    start_url = "https://luedtke-auktion-online.de"
+    start_urls = ["https://luedtke-auktion-online.de"]
 
-    def start_requests(self):
-        # get the main page and extract auctions from it
-        return [
-            scrapy.Request(
-                self.start_url,
-                callback = self.get_auctions
-            )
-        ]
-
-    def get_auctions(self, response):
+    def parse(self, response):
         self.logger.info("Getting the auctions")
-        auctions = response.css("#auktionen").css(".linkauktionen")
+        
+        auctions = response.css(".linkauktionen")
         for a in auctions:
             yield self.parse_auction(a)
 
     def parse_auction(self, element):
+        self.logger.info(f"parsing element {element}")
         url = element.xpath("@href").get()
         parsed = urlparse(url)
         content = element.css(".auction-content")
@@ -50,6 +43,8 @@ class AuctionSpider(scrapy.Spider):
         data["postcode"] = infos[2].split()[0]
         data["title"] = infos[3]
 
+        self.logger.info(data)
+
         for el in content.css(".bid-area"):
             field_name = auction_translator[el.css("b::text").get().strip(" :")]
             data[field_name] = " ".join(self.clean_list(el.css("div::text").getall()))
@@ -59,5 +54,3 @@ class AuctionSpider(scrapy.Spider):
     def clean_list(self, lst):
         return list(filter(bool, map(lambda x: x.strip(), lst)))
 
-    def parse(self, response):
-        self.logger.info("A response from %s just arrived" , response.url)
